@@ -19,8 +19,5 @@ class Distribution(Metric):
     @classmethod
     def process(cls, activations: torch.Tensor) -> torch.Tensor:
         sorted_values = torch.sort(activations, dim=-1).values
-        # assert torch.all(sorted_values >= 0), (sorted_values.min(), sorted_values.max())
-        if not torch.all(sorted_values > 0):
-            sorted_values = torch.where(sorted_values <= 0, torch.zeros_like(sorted_values), sorted_values)
-        normalised_values = sorted_values / sorted_values.sum(dim=-1, keepdim=True)
+        normalised_values = sorted_values / torch.abs(sorted_values).sum(dim=-1, keepdim=True)
         return normalised_values
